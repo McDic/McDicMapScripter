@@ -9,15 +9,17 @@ You can download the source code and use the program. Online editor is not avail
 
 # Features
 - "Event" based language structure
-  - In this language, Event is very important concept. It's same as function in other programming language. (I named "Event" to avoid confuse with Minecraft command /function)
+  - In this language, Event is very important concept. It's same as function in other programming language. 
+  - I named "Event" to avoid confuse with Minecraft command /function.
 - Int/Float/Bool variables
-  - You can define the variables for calculation. And also array supported.
+  - You can define the variables for calculation like "Int a".
+  - Array(even with multi-dimension) is available.
 - Basic operation for variables
-  - Basic arithmetic and logic operations are available.
-- If/Elif/Else branching and While Looping
-  - Branching and Looping makes you make the map control flow very easily.
+  - Basic arithmetic, assign and logic operations are available.
 - Real time delay
   - You can delay the time by just writing 1 line of code.
+- If/Elif/Else branching and While looping
+  - Branching and Looping makes you can make map control flow very easily.
 - Recursive Event calling
   - Recursive calling makes your map logic stronger.
 - MultiProcess Event calling
