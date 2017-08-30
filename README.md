@@ -25,7 +25,7 @@ You can download the source code and use the program. Online editor is not avail
 - MultiProcess Event calling
   - You can do the multiple operation at the same time. 
 - Smooth cinematic cutscene for Minecraft
-  Cutscene is very important in Minecraft map. MDMS generates smooth curve for cutscene with points you set up.
+  - Cutscene is very important in Minecraft map. MDMS generates smooth curve for cutscene with points you set up.
 
 # Future Plans
 - Smooth armorstand animations for Minecraft
