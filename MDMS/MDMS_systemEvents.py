@@ -105,6 +105,7 @@ def makeSystemEvents(initEvent):
 
     # type convert
     OP_typeconvert = event('__typeconvert', parentEvent = OP, userDefined = False, blockIDset = False, makeFirstBlock = False) # Type converting
+
     # int()
     OP_typeconvert_int = event('__to_int', parentEvent = OP_typeconvert, userDefined = False, blockIDset = False, makeFirstBlock = False)
     # int(int)
@@ -128,8 +129,14 @@ def makeSystemEvents(initEvent):
     # int(bool), True -> 1, False -> 0
     OP_typeconvert_int_bool = event('__from_bool', parentEvent = OP_typeconvert_int, userDefined = False, blockIDset = False)
     OP_typeconvert_int_bool.firstBlock.commands.append("scoreboard players operation MDMS_opCal_result_int MDMS_tempCal = MDMS_opCal_A_bool MDMS_tempCal")
+
+    # float()
+    OP_typeconvert_float = event('__to_float', parentEvent = OP_typeconvert, userDefined = False, blockIDset = False, makeFirstBlock = False)
     # float(int)
-    #OP_typeconvert[]
+    OP_typeconvert_float_int = event('__from_int', parentEvent = OP_typeconvert_float, userDefined = False, blockIDset = False)
+    OP_typeconvert_float_int.firstBlock.commands.append("scoreboard players operation MDMS_opCal_result_float_factor MDMS_tempCal = MDMS_opCal_A_int MDMS_tempCal")
+    OP_typeconvert_float_int.firstBlock.commands.append("kill @e[type=area_effect_cloud,tag=MDMS_opCal_TC_fi_loop]")
+    OP_typeconvert_float_int.firstBlock.commands.append("")
 
     '''
     # Arithmetic

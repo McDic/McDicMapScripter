@@ -374,17 +374,17 @@ def compileMCEvent(lines, startindex, endindex, eventName, tabLevel = 0,
 #------------------------------------------------
 # Get input and compile
 
-print("Input the name of file. The name of file will be the Project Name.")
+print("Input the name of file. The files will be generated in mcdic_mapscripter folder.")
 inputFileName = input()
 inputFile = open(inputFileName, "r")
-sigVar.projectName = re.sub(r'\.txt', '', inputFileName) # Project name = file name
+#"mcdic_mapscripter" = re.sub(r'\.txt', '', inputFileName) # Project name = file name
 inputs = inputFile.readlines() + ["$END"] # inputs = [line, line, ...]
 inputFile.close()
 
-if os.path.exists(sigVar.projectName):
-    shutil.rmtree(sigVar.projectName) # delete MDMS Contents if exists
+if os.path.exists("mcdic_mapscripter"):
+    shutil.rmtree("mcdic_mapscripter") # delete MDMS Contents if exists
 
-compileMCEvent(inputs, 0, len(inputs), eventName = sigVar.projectName, userDefined = True, mainInit = True)
+compileMCEvent(inputs, 0, len(inputs), eventName = "mcdic_mapscripter", userDefined = True, mainInit = True)
 
 #------------------------------------------------
 # Post processing
@@ -392,7 +392,7 @@ compileMCEvent(inputs, 0, len(inputs), eventName = sigVar.projectName, userDefin
 tempList = range(1, len(subBlock.blockDestinationID))
 
 # __mainloop.__eventcall backprocessing
-MLEC = event.universalEvents[sigVar.projectName + ".__system.__mainloop.__eventcall"]
+MLEC = event.universalEvents["mcdic_mapscripter.__system.__mainloop.__eventcall"]
 MLEC_dict = {}
 MLEC.firstBlock.makeBinarySearch("@s[type=area_effect_cloud,tag=MDMS_marker,score_MDMS_delay=0,score_MDMS_delay_min=0]",
                                  "MDMS_afterDelay", tempList, 0, len(tempList)-1, MLEC_dict)
@@ -404,17 +404,17 @@ for key in MLEC_dict:
     
 # Event call backprocessing - popstack
 # Already end during compile
-# EPS = event.universalEvents[sigVar.projectName + ".__system.__eventpopstack"]
+# EPS = event.universalEvents["mcdic_mapscripter.__system.__eventpopstack"]
 
 # Event call backprocessing - calling
-ECB = event.universalEvents[sigVar.projectName + ".__system.__eventbackcall"]
+ECB = event.universalEvents["mcdic_mapscripter.__system.__eventbackcall"]
 ECBdict = {}
 ECB.firstBlock.makeBinarySearch("@s[type=area_effect_cloud,tag=MDMS_marker]", "MDMS_targetBlock",
                                 tempList, 0, len(tempList)-1, ECBdict)
 for key in ECBdict:
     tempBlock = subBlock.bDID_reverse[tempList[key]]
     ECBdict[key].commands.append("\n# Event Calling from backprocessing.")
-    ECBdict[key].commands.append("execute @s ~ ~ ~ function " + event.universalEvents[sigVar.projectName + ".__system.__eventbackcall.__eventpopstack"].firstBlock.file.functionName)
+    ECBdict[key].commands.append("execute @s ~ ~ ~ function " + event.universalEvents["mcdic_mapscripter.__system.__eventbackcall.__eventpopstack"].firstBlock.file.functionName)
     ECBdict[key].commands.append("kill @s")
     ECBdict[key].commands.append("execute @e[type=area_effect_cloud,tag=MDMS_marker_tempTarget] ~ ~ ~ function " + tempBlock.file.functionName)
     
@@ -422,11 +422,11 @@ for key in ECBdict:
 for iEvent in event.userDefinedEvents:
     if event.universalEvents[iEvent].endBlock is not None:
         event.universalEvents[iEvent].endBlock.commands.append("\n# This is for EventCall backprocessing.")
-        event.universalEvents[iEvent].endBlock.commands.append("execute @s ~ ~ ~ function " + event.universalEvents[sigVar.projectName + ".__system.__eventbackcall"].firstBlock.file.functionName + " if @s[type=area_effect_cloud,tag=MDMS_marker,score_MDMS_prevStackID_min=0]")
+        event.universalEvents[iEvent].endBlock.commands.append("execute @s ~ ~ ~ function " + event.universalEvents["mcdic_mapscripter.__system.__eventbackcall"].firstBlock.file.functionName + " if @s[type=area_effect_cloud,tag=MDMS_marker,score_MDMS_prevStackID_min=0]")
         event.universalEvents[iEvent].endBlock.commands.append("kill @s[type=area_effect_cloud,score_MDMS_prevStackID=-1]")
 
 # Memory access method - writing
-EVW = event.universalEvents[sigVar.projectName + ".__system.__variablememory.__write"]
+EVW = event.universalEvents["mcdic_mapscripter.__system.__variablememory.__write"]
 EVWdict = {}
 EVW.firstBlock.makeBinarySearch("@s[type=area_effect_cloud,tag=MDMS_marker]", "MDMS_targetMem",
                                list(range(scoreVar.usingMemSize)), 0, scoreVar.usingMemSize - 1, EVWdict)
@@ -436,7 +436,7 @@ for key in EVWdict:
     EVWdict[key].commands.append("scoreboard players set @s MDMS_targetMem -1")
 
 # Memory access method - reading
-EVR = event.universalEvents[sigVar.projectName + ".__system.__variablememory.__read"]
+EVR = event.universalEvents["mcdic_mapscripter.__system.__variablememory.__read"]
 EVRdict = {}
 EVR.firstBlock.makeBinarySearch("@s[type=area_effect_cloud,tag=MDMS_marker]", "MDMS_targetMem",
                                list(range(scoreVar.usingMemSize)), 0, scoreVar.usingMemSize - 1, EVRdict)
@@ -456,4 +456,4 @@ for key in functionFile.universalFiles:
     file.file.close()
 
 print("\n\nSuccessfully translated.")
-print("Copy the '"+ sigVar.projectName +"' folder to your world and type '/function "+ event.universalEvents[sigVar.projectName + ".__system.__start"].firstBlock.file.functionName +"'.")
+print("Copy the '"+ "mcdic_mapscripter" +"' folder to your world and type '/function "+ event.universalEvents["mcdic_mapscripter.__system.__start"].firstBlock.file.functionName +"'.")

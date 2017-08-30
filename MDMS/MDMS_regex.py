@@ -76,16 +76,18 @@ class reStr:
     englishValues = [r'True', r'False']
     englishOperators = [r'And', r'Not', r'Or', r'Exist']
     keywords = [r'Event', r'Delay', r'Cinematic', r'Spline', r'Linear', r'Point', r'Animation',
-                r'EventCall', r'If', r'Elif', r'Else', r'While',
-                r'Int', r'Float', r'Bool', r'Long', r'Char']
+                r'EventCall', r'If', r'Elif', r'Else', r'While']
 
     operatorPriority = {'(':100, ')':100, '[':100, ']':100, '{':100, '}':100,
+                        'Int':20, 'Bool':20, 'Float':20, # Type casting
                         'Exist':20, 'Print':20, 'ReadScore':20, # Built-in Functions
                         '^':9, '~':8, '+@':8, '-@':8, # +@, -@ : single plus and minus
-                        '*':7, '/':7, '%':7, '+':6, '-':6,
-                        '>=':5, '>':5, '<':5, '<=':5, '==':4, '!=':4,
-                        '=':3, '+=':3, '-=':3, '*=':3, '/=':3, '%=':3, '^=':3,
-                        'And':2, 'Not':2, 'Or':2, ',':1}
+                        '*':7, '/':7, '%':7, '+':6, '-':6, # Arithmetic
+                        '>=':5, '>':5, '<':5, '<=':5, '==':4, '!=':4, # Value comparing
+                        '=':3, '+=':3, '-=':3, '*=':3, '/=':3, '%=':3, '^=':3, # Assign
+                        'And':2, 'Not':2, 'Or':2, # Logics
+                        ',':1 # Tupling
+                        }
     operatorArgumentsNum = {'(':None, ')':None, '[':None, ']':None, '{':None, '}':None,
                             'Exist':1, 'Print':1, 'ReadScore':2,
                             '^':2, '~':1, '+@':1, '-@':1,
@@ -94,6 +96,15 @@ class reStr:
                             '=':2, '+=':2, '-=':2, '*=':2, '/=':2, '%=':2, '^=':2,
                             'And':2, 'Not':1, 'Or':2, ',':2,
                             '[]':2}
+
+    # [Operator][(type,type..)] = function
+    # function -> mcdic_mapscripter:__system/__operation/function/__sub0
+    operatorFunctions = {'+': {("int", "int") : "__add/__int_int",
+                               ("float", "float"): "__add/__float_float"},
+                         '-': {("int", "int") : "__sub/__int_int",
+                               ("float", "float"): "__sub/__float_float"},
+                         '*': {},
+                         }
     
     duplicatedOperatorNames = {"+": {"Default": "+", "Operator":"+@", None:"+@"},
                                "-": {"Default": "-", "Operator":"-@", None:"-@"}

@@ -228,7 +228,7 @@ class subBlock:
 
         '''
         # tellraw debug
-        if sigVar.projectName + ".__system.__mainloop" in event.universalEvents and self.parentEvent is not event.universalEvents[sigVar.projectName + ".__system.__mainloop"]:
+        if "mcdic_mapscripter.__system.__mainloop" in event.universalEvents and self.parentEvent is not event.universalEvents["mcdic_mapscripter.__system.__mainloop"]:
             self.commands.append("# Debugging. Add tag \"MDMS_debug\" to get debug messages.")
             debugStr  = 'tellraw @a[score_MDMS_debugMsg_min=1,score_MDMS_debugMsg=1] {"text":"", "color":"dark_red", "extra":[{"text":"DEBUG: Running ' + self.file.functionName
             debugStr += ' from UUID "}, {"score":{"objective":"MDMS_UUID", "name":"@s"}}, {"text":", markerID "},'            
@@ -283,8 +283,8 @@ class subBlock:
 
     def statementLinking(self, statement, trueBlock, falseBlock, modeStr = "If ", inputIndex = None):
 
-        tempBranchIf = event.universalEvents[sigVar.projectName + ".__system.__branchtemp.__if"].firstBlock
-        tempBranchElse = event.universalEvents[sigVar.projectName + ".__system.__branchtemp.__else"].firstBlock
+        tempBranchIf = event.universalEvents["mcdic_mapscripter.__system.__branchtemp.__if"].firstBlock
+        tempBranchElse = event.universalEvents["mcdic_mapscripter.__system.__branchtemp.__else"].firstBlock
 
         (statementCalCommands, statementType) = calculateStatement(compileStatement(statement), self.parentEvent, inputIndex = inputIndex)
         if statementType != "bool":
