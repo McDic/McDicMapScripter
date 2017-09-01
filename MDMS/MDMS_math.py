@@ -9,20 +9,20 @@ import copy
 pi = math.pi
 
 def sin(angle, mode):
-    if mode=="180":
+    if mode in ("180", 180):
         return math.sin(angle*pi/180)
-    elif mode=="pi":
+    elif mode in ("pi", pi):
         return math.sin(angle)
     else:
-        raise Exception("Undefined mode in sin")
+        raise ValueError("Undefined mode in sin")
 
 def cos(angle, mode):
-    if mode=="180":
+    if mode in ("180", 180):
         return math.cos(angle*pi/180)
-    elif mode=="pi":
+    elif mode in ("pi", pi):
         return math.cos(angle)
     else:
-        raise Exception("Undefined mode in cos")
+        raise ValueError("Undefined mode in cos")
 
 #------------------------------------------------
 # Type supporting
