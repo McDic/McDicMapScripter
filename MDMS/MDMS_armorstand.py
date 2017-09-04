@@ -20,7 +20,9 @@ class armorstand:
                    "leg" : vec3Cart(0, -0.75, 0)
                    #"head": vec3Cart(0, 0, 0) # 0, 1.5, 0
                    ,"test": vec3Cart(2.5, -6.2, 1.3),
-                   "test2": vec3Cart(1, 2, -1.5)
+                   "test2": vec3Cart(1, 2, -1.5),
+                   "test3": vec3Cart(-3, 7, -6),
+                   "test4": vec3Cart(-1, -1, -1)
                    }
 
     def __init__(self, vec5 = None, pose = None, selector = "@e[type=armor_stand]"):
@@ -63,7 +65,7 @@ class armorstand:
             print("Transfered: " + str(pose[bodypart].convert_sph()))
             print("Retransfered: " + str(pose[bodypart].convert_sph().convert_cart()))
             pose[bodypart] = pose[bodypart].rotated(tempAngle)
-            print("Result = " + str(pose[bodypart]))
+            #print("Result = " + str(pose[bodypart] - pose[bodypart].convert_sph().convert_cart()))
             print("")
         return pose
 
