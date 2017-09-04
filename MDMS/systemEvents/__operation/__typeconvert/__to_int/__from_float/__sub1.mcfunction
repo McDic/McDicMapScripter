@@ -1,9 +1,4 @@
-# SubBlock Information:
-#   No BlockDestination ID for this subBlock
-
-# MDMS_system scoring.
-scoreboard players set @e[tag=!MDMS_system] MDMS_system 0
-
+# Operation int(float)
 # Result = A.factor * 10^(A.offset - 8)
 execute @s[score_MDMS_tempCal_min=9] ~ ~ ~ scoreboard players operation MDMS_op_result_int MDMS_tempCal *= 10 MDMS_number
 execute @s[score_MDMS_tempCal=7] ~ ~ ~ scoreboard players operation MDMS_op_result_int MDMS_tempCal /= 10 MDMS_number

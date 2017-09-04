@@ -1,6 +1,4 @@
-# SubBlock Information:
-#   No BlockDestination ID for this subBlock
-
+# Operation float(int)
 # Result: Int -> Float ( a = b * 10^(c-8) )
 kill @s[score_MDMS_tempCal_min=0,score_MDMS_tempCal=0]
 kill @s[score_MDMS_tempCal_min=100000000,score_MDMS_tempCal=999999999]

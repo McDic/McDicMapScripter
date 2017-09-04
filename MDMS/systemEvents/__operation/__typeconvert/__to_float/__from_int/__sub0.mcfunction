@@ -1,6 +1,4 @@
-# SubBlock Information:
-#   No BlockDestination ID for this subBlock
-
+# Operation float(int)
 # Result: Int -> Float ( a = b * 10^(c-8) )
 kill @e[type=area_effect_cloud,tag=MDMS_op_temp]
 summon area_effect_cloud ~ ~ ~ {Duration:999999999, Tags:["MDMS_system", "MDMS_tempCal", "MDMS_op", "MDMS_op_temp"]}
