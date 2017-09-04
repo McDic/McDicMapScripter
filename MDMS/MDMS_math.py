@@ -156,7 +156,7 @@ class vec3Cart: # Cartesian Vector (X, Y, Z)
                 else: # x=z=0
                    ry = 0
             else:
-                ry = math.atan(-x/z) / pi * 180
+                ry = math.atan2(-x, z) / pi * 180
         newvec3 = vec3Sph(r, vec2Angle(ry, rx))
         return newvec3
 
