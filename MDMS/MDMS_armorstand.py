@@ -70,7 +70,7 @@ class armorstand:
         return pose
 
 
-a = armorstand()
-a.changePose("body", vec3Angle(45,25,0))
-b = a.getPose()
+#a = armorstand()
+#a.changePose("body", vec3Angle(45,25,0))
+#b = a.getPose()
 #print(b["leg"])
