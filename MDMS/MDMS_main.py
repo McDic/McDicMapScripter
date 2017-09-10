@@ -384,6 +384,9 @@ inputFile.close()
 if os.path.exists("mcdic_mapscripter"):
     shutil.rmtree("mcdic_mapscripter") # delete MDMS Contents if exists
 
+# Copy all folders in systemEvents to mcdic_mapscripter/__system/
+shutil.copytree("systemEvents", "mcdic_mapscripter/__system")
+
 compileMCEvent(inputs, 0, len(inputs), eventName = "mcdic_mapscripter", userDefined = True, mainInit = True)
 
 #------------------------------------------------
