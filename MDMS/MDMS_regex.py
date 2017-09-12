@@ -96,15 +96,6 @@ class reStr:
                             '=':2, '+=':2, '-=':2, '*=':2, '/=':2, '%=':2, '^=':2,
                             'And':2, 'Not':1, 'Or':2, ',':2,
                             '[]':2}
-
-    # [Operator][(type,type..)] = function
-    # function -> mcdic_mapscripter:__system/__operation/function/__sub0
-    operatorFunctions = {'+': {("int", "int"): "__add/__int_int",
-                               ("float", "float"): "__add/__float_float"},
-                         '-': {("int", "int"): "__sub/__int_int",
-                               ("float", "float"): "__sub/__float_float"},
-                         '*': {("int", "int"): "__mul/__int_int" },
-                         }
     
     duplicatedOperatorNames = {"+": {"Default": "+", "Operator":"+@", None:"+@"},
                                "-": {"Default": "-", "Operator":"-@", None:"-@"}
