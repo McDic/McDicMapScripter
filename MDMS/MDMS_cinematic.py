@@ -196,7 +196,7 @@ def cuts_spline_spheric_singleval(points, times, angleMode = None, angleDirectio
 
 class cinematic:
 
-    universalCinematics = []
+    #universalCinematics = []
 
     def __init__(self, relative = False, wait = True, mode = "Spline",
                  dimension = "Undefined", selector = "@a", parentEvent = None):
@@ -214,11 +214,12 @@ class cinematic:
         # (x, y, z) for 3 dimensions, (x, y, z, ry, rx, ryd, rxd) for 5 dimensions
         self.coords = {}
 
-        cinematic.universalCinematics.append(self)
-
-        if parentEvent is not None:
-            parentEvent.cinematics.append(self)
-        self.cinematicEvent = event(eventName = "__cinematic_" + str(id(self)), parentEvent = parentEvent,
+        #cinematic.universalCinematics.append(self)
+        if parentEvent is None:
+            raise Exception("Cinematic should have parentEvent in __init in class cinematic")
+        
+        parentEvent.cinematicNum += 1
+        self.cinematicEvent = event(eventName = "__cinematic_" + str(parentEvent.cinematicNum), parentEvent = parentEvent,
                                     userDefined = False, blockIDset = True, makeFirstBlock = True)
         self.written = False
 
@@ -325,7 +326,7 @@ class cinematic:
             tempCoordStr = str(round(self.coords[time]["x"], 4)) + "\t" + str(round(self.coords[time]["y"], 4)) + "\t" + str(round(self.coords[time]["z"], 4))
             if self.dimension == 5:
                 tempCoordStr += "\t" + str(round(self.coords[time]["ry"], 4)) + "\t" + str(round(self.coords[time]["rx"], 4))
-            self.cinematicEvent.firstBlock.commands.append("# Tick " + str(time) + ":\t" + tempCoordStr)
+            self.cinematicEvent.firstBlock.commands.append("# Tick " + str(time) + ":\t\t" + tempCoordStr)
         self.cinematicEvent.firstBlock.commands.append("execute @s ~ ~ ~ function " + str(tpBlocks[0].file.functionName))
 
         if self.wait:
