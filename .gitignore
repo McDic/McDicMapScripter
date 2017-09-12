@@ -1,8 +1,8 @@
 # The program generates this folder when it runs.
-MDMS/mcdic_mapscripter/
+*/mcdic_mapscripter/
 
 # Python generates this folder when running with multiple .py files
-MDMS/__pycache__/
+*/__pycache__/
 
 # The input files which I test for program
 MDMS/*test*.txt
