@@ -19,4 +19,4 @@ execute @s[score_MDMS_tempCal_min=1,score_MDMS_tempCal=99999999] ~ ~ ~ scoreboar
 execute @s[score_MDMS_tempCal=-1,score_MDMS_tempCal_min=-99999999] ~ ~ ~ scoreboard players operation MDMS_op_result_float_factor MDMS_tempCal *= 10 MDMS_number
 execute @s[score_MDMS_tempCal=-1,score_MDMS_tempCal_min=-99999999] ~ ~ ~ scoreboard players operation @s MDMS_tempCal *= 10 MDMS_number
 
-execute @s ~ ~ ~ function mcdic_mapscripter:__system/__operation/__typeconvert/__to_float/__from_int/__sub1
+execute @s ~ ~ ~ function mcdic_mapscripter:__system/__operation/__typeconvert/__to_float/__from_int_1

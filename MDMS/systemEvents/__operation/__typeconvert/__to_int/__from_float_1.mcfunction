@@ -5,4 +5,4 @@ execute @s[score_MDMS_tempCal=7] ~ ~ ~ scoreboard players operation MDMS_op_resu
 scoreboard players remove @s[score_MDMS_tempCal_min=9] MDMS_tempCal 1
 scoreboard players add @s[score_MDMS_tempCal=7] MDMS_tempCal 1
 kill @s[score_MDMS_tempCal_min=8,score_MDMS_tempCal=8]
-execute @s ~ ~ ~ function mcdic_mapscripter:__system/__operation/__typeconvert/__to_int/__from_float/__sub1
+execute @s ~ ~ ~ function mcdic_mapscripter:__system/__operation/__typeconvert/__to_int/__from_float_1
