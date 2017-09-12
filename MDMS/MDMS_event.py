@@ -15,9 +15,25 @@ from MDMS_sigVar import *
 from MDMS_regex import *
 
 #------------------------------------------------
+# Administrate all namespaces
+
+class namespace:
+
+    universal = {"__target__": None, "__type__": None}
+
+    def __init__(self, name, _type_, parent = None):
+        self.namespace = name
+        if self.parent is None:
+            if self.name in namespace.universal:
+                raise NameError("Same name in universal namespace in __init__ in class namespace")
+            else:
+                namespace.universal[name] = {"__target__": self}
+
+
+#------------------------------------------------
 # Variable support
 
-class scoreVar:
+class scoreVar():
     
     # [varID] : self
     # universalScoreVar = {}
@@ -307,7 +323,7 @@ class subBlock:
 #------------------------------------------------
 # Class event
 
-class event:
+class event():
 
     universalEvents = {}
     userDefinedEvents = {}
@@ -357,9 +373,9 @@ class event:
         else:
             self.firstBlock = None
         self.endBlock = None
-        
-        self.variables = {}
-        self.cinematics = []
+
+        self.variables = {} # Variables under this event
+        self.cinematicNum = 0
         
 
     def __repr__(self):
