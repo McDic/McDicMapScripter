@@ -66,11 +66,12 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
         
         index += 1
 
-    memReadCommand = "execute @s ~ ~ ~ function " + event.universalEvents[sigVar.projectName + ".__system.__variablememory.__read"].firstBlock.file.functionName
-    memWriteCommand = "execute @s ~ ~ ~ function " + event.universalEvents[sigVar.projectName + ".__system.__variablememory.__write"].firstBlock.file.functionName
+    memReadCommand = "execute @s ~ ~ ~ function " + event.universalEvents["mcdic_mapscripter" + ".__system.__variablememory.__read"].firstBlock.file.functionName
+    memWriteCommand = "execute @s ~ ~ ~ function " + event.universalEvents["mcdic_mapscripter" + ".__system.__variablememory.__write"].firstBlock.file.functionName
 
     def makeReadForDim0(index):
         if stateStack[index]["variable"] and stateStack[index]["dimension"] == 0:
+            commands.append("# Memory Access: ")
             commands.append("scoreboard players set @s MDMS_targetMem 0")
             for i in range(len(stateStack[index]["offset"])):
                 offset = stateStack[index]["offset"][i]
@@ -94,6 +95,26 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                 commands.append("scoreboard players operation MDMS_tempCal" + str(stateStack[index]["tempCalMem"]) + "_bool MDMS_tempCal = @s MDMS_tempCal")
         else:
             raise IndexError("Dimension of this variable is not 0 in makeReadForDim0 in calculateStatement")
+
+    def tempWrite(stateIndex, tempNumIndex):
+        if stateStack[stateIndex]["type"] == "int":
+            commands.append("scoreboard players operation MDMS_op_" + str(tempNumIndex) + "_int MDMS_tempCal = MDMS_tempCal" + str(stateStack[stateIndex]["tempCalMem"]) + "_int MDMS_tempCal")
+        elif stateStack[stateIndex]["type"] == "float":
+            commands.append("scoreboard players operation MDMS_op_" + str(tempNumIndex) + "_float_factor MDMS_tempCal = MDMS_tempCal" + str(stateStack[stateIndex]["tempCalMem"]) + "_float_factor MDMS_tempCal")
+            commands.append("scoreboard players operation MDMS_op_" + str(tempNumIndex) + "_float_offset MDMS_tempCal = MDMS_tempCal" + str(stateStack[stateIndex]["tempCalMem"]) + "_float_offset MDMS_tempCal")
+        elif stateStack[stateIndex]["type"] == "bool":
+            commands.append("scoreboard players operation MDMS_op_" + str(tempNumIndex) + "_bool MDMS_tempCal = MDMS_tempCal" + str(stateStack[stateIndex]["tempCalMem"]) + "_bool MDMS_tempCal")
+        else:
+            raise TypeError("Invalid fromType in tempWrite in calculateStatement")
+
+    def readTempResult(stateIndex, resultType):
+        if resultType == "int":
+            commands.append("scoreboard players operation MDMS_tempCal" + str(stateStack[stateIndex]["tempCalMem"]) + "_int MDMS_tempCal = MDMS_op_result_int MDMS_tempCal")
+        elif resultType == "float":
+            commands.append("scoreboard players operation MDMS_tempCal" + str(stateStack[stateIndex]["tempCalMem"]) + "_float_factor MDMS_tempCal = MDMS_op_result_float_factor MDMS_tempCal")
+            commands.append("scoreboard players operation MDMS_tempCal" + str(stateStack[stateIndex]["tempCalMem"]) + "_float_offset MDMS_tempCal = MDMS_op_result_float_offset MDMS_tempCal")
+        elif resultType == "bool":
+            commands.append("scoreboard players operation MDMS_tempCal" + str(stateStack[stateIndex]["tempCalMem"]) + "_bool MDMS_tempCal = MDMS_op_result_bool MDMS_tempCal")
     
     index = 0
     while index < len(stateStack):
@@ -136,51 +157,47 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                     print(stateStack[index]["value"])
                     if stateStack[index]["value"] in ("+", "-", "*", "/", "^", "%"): # Arithmetic  
                         if stateStack[index]["value"] == "+": # A+B
-                            if stateStack[index-2]["type"] == stateStack[index-1]["type"]: # A+B same type
-                                if stateStack[index-2]["type"] == "int": # int + int
-                                    command  = "scoreboard players operation MDMS_tempCal" + str(stateStack[index-2]["tempCalMem"]) + "_int MDMS_tempCal += "
-                                    command += "MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal"
-                                    commands.append(command)
-                                else:
-                                    raise NotImplementedError("")
-                            else: # A+B different type
-                                raise NotImplementedError("")
+                            if stateStack[index-2]["type"] == "int" and stateStack[index-1]["type"] == "int": # int + int
+                                tempWrite(index-2, 0); tempWrite(index-1, 1)
+                                commands.append("function mcdic_mapscripter:__system/__operation/__arithmetic/__add/__int_int_0")
+                                readTempResult(index-2, "int")
+                            else:
+                                raise TypeError("Invalid types for + operation in line " + str(inputIndex))
 
                         elif stateStack[index]["value"] == "-": # A-B
-                            if stateStack[index-2]["type"] == stateStack[index-1]["type"]: # A-B same type
-                                if stateStack[index-2]["type"] == "int": # int - int
-                                    command  = "scoreboard players operation MDMS_tempCal" + str(stateStack[index-2]["tempCalMem"]) + "_int MDMS_tempCal -= "
-                                    command += "MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal"
-                                    commands.append(command)
-                                else:
-                                    raise NotImplementedError("")
+                            if stateStack[index-2]["type"] == "int" and stateStack[index-1]["type"] == "int": # int + int
+                                tempWrite(index-2, 0); tempWrite(index-1, 1)
+                                commands.append("function mcdic_mapscripter:__system/__operation/__arithmetic/__sub/__int_int_0")
+                                readTempResult(index-2, "int")
                             else: # A-B different type
-                                raise NotImplementedError("")
+                                raise TypeError("Invalid types for - operation in line " + str(inputIndex))
 
                         elif stateStack[index]["value"] == "*": # A*B
-                            if stateStack[index-2]["type"] == stateStack[index-1]["type"]: # A*B same type
-                                if stateStack[index-2]["type"] == "int": # int * int
-                                    command  = "scoreboard players operation MDMS_tempCal" + str(stateStack[index-2]["tempCalMem"]) + "_int MDMS_tempCal *= "
-                                    command += "MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal"
-                                    commands.append(command)
-                                else:
-                                    raise NotImplementedError("")
-                            else: # A*B different type
-                                raise NotImplementedError("")
+                            if stateStack[index-2]["type"] == "int" and stateStack[index-1]["type"] == "int": # int * int
+                                tempWrite(index-2, 0); tempWrite(index-1, 1)
+                                commands.append("function mcdic_mapscripter:__system/__operation/__arithmetic/__mul/__int_int_0")
+                                readTempResult(index-2, "int")
+                            else: # A-B different type
+                                raise TypeError("Invalid types for * operation in line " + str(inputIndex))
 
                         elif stateStack[index]["value"] == "/": # A/B
-                            if stateStack[index-2]["type"] == stateStack[index-1]["type"]: # A/B same type
-                                if stateStack[index-2]["type"] == "int": # int / int
-                                    command  = "scoreboard players operation MDMS_tempCal" + str(stateStack[index-2]["tempCalMem"]) + "_int MDMS_tempCal /= "
-                                    command += "MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal"
-                                    commands.append(command)
-                                else:
-                                    raise NotImplementedError("")
-                            else: # A/B different type
-                                raise NotImplementedError("")
+                            if stateStack[index-2]["type"] == "int" and stateStack[index-1]["type"] == "int": # int / int
+                                tempWrite(index-2, 0); tempWrite(index-1, 1)
+                                commands.append("function mcdic_mapscripter:__system/__operation/__arithmetic/__div/__int_int_0")
+                                readTempResult(index-2, "int")
+                            else: # A-B different type
+                                raise TypeError("Invalid types for / operation in line " + str(inputIndex))
+
+                        elif stateStack[index]["value"] == "%": # A%B
+                            if stateStack[index-2]["type"] == "int" and stateStack[index-1]["type"] == "int": # int % int
+                                tempWrite(index-2, 0); tempWrite(index-1, 1)
+                                commands.append("function mcdic_mapscripter:__system/__operation/__arithmetic/__mod/__int_int_0")
+                                readTempResult(index-2, "int")
+                            else: # A-B different type
+                                raise TypeError("Invalid types for % operation in line " + str(inputIndex))
 
                         else:
-                            raise NotImplementedError("")
+                            raise NotImplementedError()
 
                         stateStack[index-2]["variable"] = False
                         stateStack[index-2]["unclear"] = True
@@ -219,7 +236,7 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                 else:
                                     raise TypeError("Invalid type for operation '=' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
                             
                         elif stateStack[index]["value"] == "+=": # A+=B
                             if stateStack[index-2]["type"] == stateStack[index-1]["type"]: # same type operation
@@ -228,13 +245,13 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                     commands.append("scoreboard players operation @s MDMS_tempCal += MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal")
                                     commands.append(memWriteCommand)
                                 elif stateStack[index-2]["type"] == "float": # float += float
-                                    raise NotImplementedError("")
+                                    raise NotImplementedError()
                                 #elif stateStack[index-2]["type"] == "bool": # bool += bool
                                 #    raise TypeError("+= operation don't support Bool type in line " + str(inputIndex))
                                 else:
                                     raise TypeError("Invalid type for operation '+=' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
 
                         elif stateStack[index]["value"] == "-=": # A-=B
                             if stateStack[index-2]["type"] == stateStack[index-1]["type"]: # same type operation
@@ -243,13 +260,13 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                     commands.append("scoreboard players operation @s MDMS_tempCal -= MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal")
                                     commands.append(memWriteCommand)
                                 elif stateStack[index-2]["type"] == "float": # float -= float
-                                    raise NotImplementedError("")
+                                    raise NotImplementedError()
                                 #elif stateStack[index-2]["type"] == "bool": # bool -= bool
                                 #    raise TypeError("-= operation don't support Bool type in line " + str(inputIndex))
                                 else:
                                     raise TypeError("Invalid type for operation '-=' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
 
                         elif stateStack[index]["value"] == "*=": # A*=B
                             if stateStack[index-2]["type"] == stateStack[index-1]["type"]: # same type operation
@@ -258,13 +275,13 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                     commands.append("scoreboard players operation @s MDMS_tempCal *= MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal")
                                     commands.append(memWriteCommand)
                                 elif stateStack[index-2]["type"] == "float": # float *= float
-                                    raise NotImplementedError("")
+                                    raise NotImplementedError()
                                 #elif stateStack[index-2]["type"] == "bool": # bool *= bool
                                 #    raise TypeError("*= operation don't support Bool type in line " + str(inputIndex))
                                 else:
                                     raise TypeError("Invalid type for operation '*=' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
 
                         elif stateStack[index]["value"] == "/=": # A/=B
                             if stateStack[index-2]["type"] == stateStack[index-1]["type"]: # same type operation
@@ -273,16 +290,16 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                     commands.append("scoreboard players operation @s MDMS_tempCal /= MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal")
                                     commands.append(memWriteCommand)
                                 elif stateStack[index-2]["type"] == "float": # float /= float
-                                    raise NotImplementedError("")
+                                    raise NotImplementedError()
                                 #elif stateStack[index-2]["type"] == "bool": # bool /= bool
                                 #    raise TypeError("/= operation don't support Bool type in line " + str(inputIndex))
                                 else:
                                     raise TypeError("Invalid type for operation '/=' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
                         
                         else:
-                            raise NotImplementedError("")
+                            raise NotImplementedError()
 
                     elif stateStack[index]["value"] in ("+@", "-@"): # Arithmetic Singular
                         
@@ -317,7 +334,7 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                     commands.append("scoreboard players operation @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int] MDMS_tempCal -= MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal")
                                     commands.append("execute @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int,score_MDMS_tempCal_min=0,score_MDMS_tempCal=0] ~ ~ ~ scoreboard players set MDMS_tempBool MDMS_tempCal 1")
                                 elif stateStack[index-2]["type"] == "float":
-                                    raise NotImplementedError("")
+                                    raise NotImplementedError()
                                 elif stateStack[index-2]["type"] == "bool":
                                     commands.append('summon area_effect_cloud ~ ~ ~ {CustomName:"MDMS_tempComparison_bool", Tags:["MDMS_system", "MDMS_tempComparison"]}')
                                     commands.append("scoreboard players set @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_bool] MDMS_tempCal 0")
@@ -327,7 +344,7 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                 else:
                                     raise TypeError("Invalid type for operation '==' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
 
                         elif stateStack[index]["value"] == "!=": # A != B
                             commands.append("scoreboard players set MDMS_tempBool MDMS_tempCal 1")
@@ -339,7 +356,7 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                     commands.append("scoreboard players operation @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int] MDMS_tempCal -= MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal")
                                     commands.append("execute @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int,score_MDMS_tempCal_min=0,score_MDMS_tempCal=0] ~ ~ ~ scoreboard players set MDMS_tempBool MDMS_tempCal 0")
                                 elif stateStack[index-2]["type"] == "float":
-                                    raise NotImplementedError("")
+                                    raise NotImplementedError()
                                 elif stateStack[index-2]["type"] == "bool":
                                     commands.append('summon area_effect_cloud ~ ~ ~ {CustomName:"MDMS_tempComparison_bool", Tags:["MDMS_system", "MDMS_tempComparison"]}')
                                     commands.append("scoreboard players set @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_bool] MDMS_tempCal 0")
@@ -349,7 +366,7 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                 else:
                                     raise TypeError("Invalid type for operation '==' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
 
                         elif stateStack[index]["value"] == ">": # A > B
                             commands.append("scoreboard players set MDMS_tempBool MDMS_tempCal 0")
@@ -361,11 +378,11 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                     commands.append("scoreboard players operation @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int] MDMS_tempCal -= MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal")
                                     commands.append("execute @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int,score_MDMS_tempCal_min=1] ~ ~ ~ scoreboard players set MDMS_tempBool MDMS_tempCal 1")
                                 elif stateStack[index-2]["type"] == "float":
-                                    raise NotImplementedError("")
+                                    raise NotImplementedError()
                                 else: # Include bool
                                     raise TypeError("Invalid type for operation '>' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
 
                         elif stateStack[index]["value"] == "<": # A < B
                             commands.append("scoreboard players set MDMS_tempBool MDMS_tempCal 0")
@@ -377,11 +394,11 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                     commands.append("scoreboard players operation @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int] MDMS_tempCal -= MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal")
                                     commands.append("execute @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int,score_MDMS_tempCal=-1] ~ ~ ~ scoreboard players set MDMS_tempBool MDMS_tempCal 1")
                                 elif stateStack[index-2]["type"] == "float":
-                                    raise NotImplementedError("")
+                                    raise NotImplementedError()
                                 else: # Include bool
                                     raise TypeError("Invalid type for operation '<' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
 
                         elif stateStack[index]["value"] == ">=": # A >= B
                             commands.append("scoreboard players set MDMS_tempBool MDMS_tempCal 0")
@@ -393,11 +410,11 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                     commands.append("scoreboard players operation @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int] MDMS_tempCal -= MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal")
                                     commands.append("execute @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int,score_MDMS_tempCal_min=0] ~ ~ ~ scoreboard players set MDMS_tempBool MDMS_tempCal 1")
                                 elif stateStack[index-2]["type"] == "float":
-                                    raise NotImplementedError("")
+                                    raise NotImplementedError()
                                 else: # Include bool
                                     raise TypeError("Invalid type for operation '>=' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
 
                         elif stateStack[index]["value"] == "<=": # A <= B
                             commands.append("scoreboard players set MDMS_tempBool MDMS_tempCal 0")
@@ -409,14 +426,14 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                     commands.append("scoreboard players operation @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int] MDMS_tempCal -= MDMS_tempCal" + str(stateStack[index-1]["tempCalMem"]) + "_int MDMS_tempCal")
                                     commands.append("execute @e[type=area_effect_cloud,tag=MDMS_tempComparison,name=MDMS_tempComparison_int,score_MDMS_tempCal=0] ~ ~ ~ scoreboard players set MDMS_tempBool MDMS_tempCal 1")
                                 elif stateStack[index-2]["type"] == "float":
-                                    raise NotImplementedError("")
+                                    raise NotImplementedError()
                                 else: # Include bool
                                     raise TypeError("Invalid type for operation '<=' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
 
                         else:
-                            raise NotImplementedError("")
+                            raise NotImplementedError()
 
                         commands.append("scoreboard players operation MDMS_tempCal" + str(stateStack[index-2]["tempCalMem"]) + "_bool MDMS_tempCal = MDMS_tempBool MDMS_tempCal")
                         commands.append("kill @e[type=area_effect_cloud,tag=MDMS_tempComparison]")
@@ -433,7 +450,7 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                 else:
                                     raise TypeError("Invalid type for operation 'And' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
                             stateStack[index-2]["type"] = "bool"
                             stateStack[index-2]["unclear"] = True
                             stateStack[index-2]["variable"] = False
@@ -447,7 +464,7 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                 else:
                                     raise TypeError("Invalid type for operation 'Or' in line " + str(inputIndex))
                             else:
-                                raise NotImplementedError("")
+                                raise NotImplementedError()
                             stateStack[index-2]["type"] = "bool"
                             stateStack[index-2]["unclear"] = True
                             stateStack[index-2]["variable"] = False
@@ -481,10 +498,10 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
                                 raise TypeError("Invalid type for operation 'Print' in line " + str(inputIndex))
 
                         else:
-                            raise NotImplementedError("")
+                            raise NotImplementedError()
                     
                     else: # Not implemented operator
-                        raise NotImplementedError("")
+                        raise NotImplementedError()
 
                 for i in range(reStr.operatorArgumentsNum[stateStack[index]["value"]]):
                     del stateStack[index-i]
@@ -511,7 +528,7 @@ def calculateStatement(stateStack_, parentEvent, inputIndex = None):
     elif stateStack[0]["type"] == "selector":
         pass
     else:
-        raise NotImplementedError("")
+        raise NotImplementedError()
 
     return (commands, stateStack[0]["type"])
 
@@ -620,7 +637,7 @@ def compileStatement(inputLine, inputIndex = None):
                     totalStack.append({"value": False, "type": "bool", "variable": False, "unclear": False})
                     print("Value Catched False")
                 else:
-                    raise NotImplementedError("")
+                    raise NotImplementedError()
                 line = line[len(var):]
             else:
                 totalStack.append({"value": var, "type": "unknown", "variable": True, "unclear": True})
