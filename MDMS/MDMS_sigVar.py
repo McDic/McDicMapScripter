@@ -3,8 +3,6 @@
 
 class sigVar: # significant variables
 
-    projectName = ""
-
     baseObjectives = {"dummy": ["MDMS_system", "MDMS_delay", "MDMS_targetBlock", "MDMS_afterDelay",
                                 "MDMS_prevStackID", "MDMS_UUID", "MDMS_number", "MDMS_debugMsg",
                                 "MDMS_tempCal", "MDMS_targetMem"]}
