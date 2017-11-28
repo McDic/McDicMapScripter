@@ -1,6 +1,9 @@
 # The program generates this folder when it runs.
 */mcdic_mapscripter/
 
+# Simple Cinematic Results
+*/SimpleCinematicResults/
+
 # Python generates this folder when running with multiple .py files
 */__pycache__/
 
